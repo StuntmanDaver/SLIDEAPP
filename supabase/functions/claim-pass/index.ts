@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getAuthenticatedUser, errorResponse, successResponse } from "../_shared/auth.ts";
 import { hashToken, parseJsonBody } from "../_shared/utils.ts";
+import { checkRateLimit, RATE_LIMIT_CONFIGS, rateLimitErrorResponse } from "../_shared/rate-limit.ts";
 
 serve(async (req: Request) => {
   if (req.method !== "POST") {
@@ -18,6 +19,12 @@ serve(async (req: Request) => {
     const user = await getAuthenticatedUser(req, supabase);
     if (!user) {
       return errorResponse("Unauthorized", 401);
+    }
+
+    // Rate limit by user
+    const rateLimit = checkRateLimit(`claim:${user.user_id}`, RATE_LIMIT_CONFIGS.claim);
+    if (!rateLimit.allowed) {
+      return rateLimitErrorResponse(rateLimit.resetAt);
     }
 
     // Parse request body

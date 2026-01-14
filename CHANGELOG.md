@@ -4,6 +4,64 @@ All notable changes to the Slide app will be documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-01-13
+
+### Added - Phase 10: Consumer App Core
+- Tab navigation (Home, Passes, QR, Account)
+- Home screen with membership status and "Send Pass" flow
+- Pass wallet UI with status badges
+- Secure QR display with rotating token and auto-refresh
+- Deep link handling for claiming passes
+- Account management screen
+
+### Added - Phase 11: Consumer App Polish
+- Stripe PaymentSheet integration for subscriptions
+- Haptic feedback and spring animations
+- Offline handling with network status banner
+- Onboarding flow with secure storage state
+- Push notification permission setup
+
+### Added - Phase 12: Scanner App Core
+- Staff authentication flow with role checks
+- QR Code scanner with torch control
+- Real-time pass validation via Edge Function
+- Scan result overlays (Valid, Used, Invalid, etc.)
+- Scan history stored locally
+
+### Added - Phase 13: Scanner App Polish
+- Secure session management with auto-logout
+- Network error handling and retry logic
+- Haptic and visual feedback for scans
+- Device ID tracking for audit logs
+
+### Added - Phase 14: Admin Dashboard
+- Protected admin routes and login
+- Dashboard overview with real-time stats
+- Plans management (Edit passes/period, Enable/Disable)
+- User management (Search, Ban/Unban, View Details)
+- Staff management (Invite, Disable)
+- Scan logs explorer with CSV export
+- Analytics charts (Volume, Distribution)
+
+### Added - Phase 15: Testing & QA
+- Unit tests for Edge Functions (auth, pass creation)
+- Cryptographic tests for QR token signing/verification
+- Integration tests for full Pass Lifecycle (Create -> Claim -> Redeem)
+- Webhook tests for Stripe integration
+- Load testing script (k6) for high-concurrency redemption
+
+### Added - Phase 16: DevOps & Infrastructure
+- GitHub Actions CI/CD pipeline (Lint, Test, Deploy)
+- Staging environment configuration guide
+- Production setup documentation
+- Monitoring and Alerting strategy
+- Deployment Runbook
+
+### Added - Phase 17: Launch Prep
+- Security Audit checklist
+- App Store metadata and screenshot plan
+- Operational Runbook for venue staff and admins
+
 ## [0.1.0] - 2026-01-13
 
 ### Added - Phase 1: Project Foundation

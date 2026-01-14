@@ -4,6 +4,7 @@ import { getAuthenticatedUser, requireRole, errorResponse, successResponse } fro
 import { parseJsonBody } from "../_shared/utils.ts";
 import { verifyQRToken } from "../_shared/qr-token.ts";
 import { SCAN_RESULTS } from "../_shared/constants.ts";
+import { checkRateLimit, RATE_LIMIT_CONFIGS, rateLimitErrorResponse } from "../_shared/rate-limit.ts";
 
 serve(async (req: Request) => {
   if (req.method !== "POST") {
@@ -34,6 +35,12 @@ serve(async (req: Request) => {
       return errorResponse("Missing qr_token or device_id", 400);
     }
 
+    // Rate limit by device
+    const rateLimit = checkRateLimit(`redeem:${body.device_id}`, RATE_LIMIT_CONFIGS.redeem);
+    if (!rateLimit.allowed) {
+      return rateLimitErrorResponse(rateLimit.resetAt);
+    }
+
     const startTime = Date.now();
 
     // Verify QR token signature
@@ -42,20 +49,23 @@ serve(async (req: Request) => {
       return errorResponse("Server configuration error", 500);
     }
 
-    const payload = await verifyQRToken(body.qr_token, signingSecret);
-    if (!payload) {
+    const verifyResult = await verifyQRToken(body.qr_token, signingSecret);
+    if (!verifyResult.valid) {
       const latency = Date.now() - startTime;
-      // Log invalid scan
+      const result = verifyResult.reason === "expired" 
+        ? SCAN_RESULTS.EXPIRED 
+        : SCAN_RESULTS.INVALID;
+      // Log scan with appropriate result
       await supabase.from("scan_events").insert({
-        result: SCAN_RESULTS.INVALID,
+        result,
         scanner_staff_id: user.user_id,
         device_id: body.device_id,
         latency_ms: latency,
       });
-      return successResponse({ result: SCAN_RESULTS.INVALID });
+      return successResponse({ result });
     }
 
-    const passId = payload.pass_id;
+    const passId = verifyResult.payload.pass_id;
 
     // Atomic redeem: only transition from 'claimed' to 'redeemed'
     const { data: updatedPass, error: updateError } = await supabase

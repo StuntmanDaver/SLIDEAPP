@@ -1,0 +1,15 @@
+node_modules
+.next
+dist
+build
+out
+.expo
+.expo-shared
+.vercel
+.supabase
+*.log
+.DS_Store
+.env*
+.git
+.github
+.husky

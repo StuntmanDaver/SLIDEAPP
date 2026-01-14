@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { supabase } from "../lib/supabase";
-import type { StaffRole } from "@slide/shared";
+import * as SecureStore from "expo-secure-store";
 
 export function StaffLoginScreen() {
   const [email, setEmail] = useState("");
@@ -10,6 +10,8 @@ export function StaffLoginScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSignIn = async () => {
+    Keyboard.dismiss();
+    
     if (!email || !password) {
       setError("Please enter email and password");
       return;
@@ -55,6 +57,9 @@ export function StaffLoginScreen() {
         return;
       }
 
+      // Save login time
+      await SecureStore.setItemAsync("staff_login_time", Date.now().toString());
+
       // Success - role will be checked at navigation level
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -64,54 +69,68 @@ export function StaffLoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-bg justify-center items-center px-6">
-      <View className="w-full max-w-xs">
-        <Text className="text-3xl font-bold text-text-primary mb-2 text-center">
-          Slide Scanner
-        </Text>
-        <Text className="text-sm text-text-secondary text-center mb-8">
-          Staff Login
-        </Text>
-
-        {error && (
-          <View className="bg-red-100 rounded-lg p-3 mb-4">
-            <Text className="text-red-800 text-sm">{error}</Text>
-          </View>
-        )}
-
-        <TextInput
-          placeholder="Email"
-          placeholderTextColor="#7D737B"
-          value={email}
-          onChangeText={setEmail}
-          editable={!isLoading}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          className="bg-surface border border-border-hair rounded-lg p-3 mb-4 text-text-primary"
-        />
-
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#7D737B"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          editable={!isLoading}
-          className="bg-surface border border-border-hair rounded-lg p-3 mb-6 text-text-primary"
-        />
-
-        <Pressable
-          onPress={handleSignIn}
-          disabled={isLoading}
-          className="bg-text-primary rounded-lg p-4 flex-row items-center justify-center"
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1 bg-bg"
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          keyboardShouldPersistTaps="handled"
         >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-white font-semibold">Sign In</Text>
-          )}
-        </Pressable>
-      </View>
-    </View>
+          <View className="flex-1 justify-center items-center px-6">
+            <View className="w-full max-w-xs">
+              <Text className="text-3xl font-bold text-text-primary mb-2 text-center">
+                Slide Scanner
+              </Text>
+              <Text className="text-sm text-text-secondary text-center mb-8">
+                Staff Login
+              </Text>
+
+              {error && (
+                <View className="bg-red-100 rounded-lg p-3 mb-4">
+                  <Text className="text-red-800 text-sm">{error}</Text>
+                </View>
+              )}
+
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor="#7D737B"
+                value={email}
+                onChangeText={setEmail}
+                editable={!isLoading}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="bg-surface border border-border-hair rounded-lg p-3 mb-4 text-text-primary"
+              />
+
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="#7D737B"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                editable={!isLoading}
+                onSubmitEditing={handleSignIn}
+                returnKeyType="go"
+                className="bg-surface border border-border-hair rounded-lg p-3 mb-6 text-text-primary"
+              />
+
+              <Pressable
+                onPress={handleSignIn}
+                disabled={isLoading}
+                className="bg-text-primary rounded-lg p-4 flex-row items-center justify-center"
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-semibold">Sign In</Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
