@@ -1,0 +1,33 @@
+# Supabase Project Configuration
+
+[project]
+# Project ID is stored in .temp/project-ref
+# Full details on: https://supabase.com/docs/guides/local-development
+
+[api]
+# Port to use for the API server
+port = 54321
+# Schemas to expose in the API
+schemas = ["public"]
+# Disable the default JWT authentication
+disable_jwt_auth = false
+
+[db]
+# Port to use for PostgreSQL
+port = 54322
+
+[studio]
+# Port to use for Supabase Studio
+port = 54323
+
+[inbucket]
+# Port to use for Inbucket (email testing)
+port = 54324
+
+[auth]
+# Enabled auth providers
+enabled_providers = ["apple", "google"]
+
+[analytics]
+# Disable analytics
+enabled = false

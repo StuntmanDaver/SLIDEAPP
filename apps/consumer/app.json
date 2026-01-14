@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Slide",
+    "slug": "slide-consumer",
+    "version": "0.1.0",
+    "scheme": "slide",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E1E2DD"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      "expo-router",
+      "expo-camera",
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your face ID?"
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.slidevenue.consumer",
+      "buildNumber": "1",
+      "associatedDomains": ["applinks:yourdomain.com"]
+    },
+    "android": {
+      "package": "com.slidevenue.consumer",
+      "versionCode": 1,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "yourdomain.com",
+              "pathPrefix": "/claim"
+            },
+            {
+              "scheme": "slide",
+              "host": "claim"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    }
+  }
+}

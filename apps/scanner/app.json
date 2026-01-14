@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Slide Scanner",
+    "slug": "slide-scanner",
+    "version": "0.1.0",
+    "scheme": "slide-scanner",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E1E2DD"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      "expo-router",
+      "expo-camera"
+    ],
+    "ios": {
+      "supportsTabletMode": false,
+      "bundleIdentifier": "com.slidevenue.scanner",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.slidevenue.scanner",
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    }
+  }
+}
