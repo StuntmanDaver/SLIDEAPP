@@ -12,6 +12,7 @@
     "./schemas": "./src/schemas/index.ts"
   },
   "scripts": {
+    "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

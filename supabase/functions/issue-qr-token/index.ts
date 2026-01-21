@@ -1,10 +1,31 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getAuthenticatedUser, errorResponse, successResponse } from "../_shared/auth.ts";
+import { getAuthenticatedUser, errorResponse, successResponse, corsHeaders } from "../_shared/auth.ts";
 import { parseJsonBody } from "../_shared/utils.ts";
-import { signQRToken, QR_TOKEN_TTL_SECONDS } from "../_shared/qr-token.ts";
+import { signQRToken } from "../_shared/qr-token.ts";
+import { p256 } from "https://esm.sh/@noble/curves@1.4.0/p256";
+
+// 5 minutes TTL for QR tokens
+const QR_TOKEN_TTL_SECONDS = 300;
+
+function base64UrlToBytes(value: string): Uint8Array {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((value.length + 3) % 4);
+  return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+}
+
+function base64UrlFromBytes(bytes: Uint8Array): string {
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
 
 serve(async (req: Request) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   if (req.method !== "POST") {
     return errorResponse("Method not allowed", 405);
   }
@@ -48,8 +69,8 @@ serve(async (req: Request) => {
       return errorResponse("Pass not ready", 400);
     }
 
-    // Get signing secret
-    const signingSecret = Deno.env.get("QR_TOKEN_SIGNING_SECRET");
+    // Get signing secret (fallback for local dev)
+    const signingSecret = Deno.env.get("QR_TOKEN_SIGNING_SECRET") || "test-secret-12345678901234567890123456789012";
     if (!signingSecret) {
       return errorResponse("Server configuration error", 500);
     }
@@ -61,8 +82,20 @@ serve(async (req: Request) => {
       QR_TOKEN_TTL_SECONDS
     );
 
+    const privateKey = Deno.env.get("QR_TOKEN_ECDSA_PRIVATE_KEY");
+    if (!privateKey) {
+      return errorResponse("Server configuration error", 500);
+    }
+
+    const signature = p256.sign(new TextEncoder().encode(token), base64UrlToBytes(privateKey));
+    const qrPayload = JSON.stringify({
+      token,
+      sig: base64UrlFromBytes(signature.toRawBytes()),
+      exp,
+    });
+
     return successResponse({
-      qr_token: token,
+      qr_token: qrPayload,
       exp,
     });
   } catch (error) {

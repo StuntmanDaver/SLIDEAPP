@@ -1,0 +1,116 @@
+version: '3.8'
+
+# ============================================================
+# Slide App - Docker Compose for Local Development
+# ============================================================
+# 
+# IMPORTANT: Supabase runs separately via `supabase start`
+# This compose file runs the app services that connect to Supabase
+#
+# Quick Start:
+#   1. Start Supabase: supabase start
+#   2. Start apps: docker compose up
+#   3. Admin Dashboard: http://localhost:3000
+#   4. Consumer Web: http://localhost:8080
+#   5. Supabase Studio: http://localhost:54323
+#
+# ============================================================
+
+services:
+  # Admin Dashboard (Next.js)
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://host.docker.internal:54321}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Consumer App (Expo Web Export)
+  consumer-web:
+    build:
+      context: .
+      dockerfile: apps/consumer/Dockerfile
+      args:
+        EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL}
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY}
+    ports:
+      - "8080:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Backend tests (Deno)
+  test-backend:
+    image: denoland/deno:1.46.3
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL:-http://host.docker.internal:54321}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: >
+      sh -c "deno test --allow-net --allow-env supabase/functions/_shared/qr-token.test.ts supabase/functions/create-pass/index.test.ts tests/integration/pass-lifecycle.test.ts"
+    profiles:
+      - test
+
+  # Frontend checks (Admin)
+  test-frontend:
+    image: node:20-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/admin/node_modules
+      - /app/packages/shared/node_modules
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://host.docker.internal:54321}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    command: >
+      sh -c "corepack enable &&
+             pnpm install &&
+             pnpm --filter ./apps/admin lint &&
+             pnpm --filter ./apps/admin type-check &&
+             pnpm --filter ./apps/admin build"
+    profiles:
+      - test
+
+  # Development mode - runs all apps with hot reload
+  dev:
+    image: node:20-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/admin/node_modules
+      - /app/apps/consumer/node_modules
+      - /app/apps/scanner/node_modules
+      - /app/packages/shared/node_modules
+    ports:
+      - "3000:3000"   # Admin
+      - "8081:8081"   # Metro bundler (Expo)
+      - "19000:19000" # Expo dev server
+      - "19001:19001" # Expo dev tools
+    environment:
+      - NODE_ENV=development
+      - EXPO_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - EXPO_PUBLIC_SUPABASE_ANON_KEY=${EXPO_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: >
+      sh -c "corepack enable && 
+             pnpm install && 
+             pnpm dev"
+    profiles:
+      - dev

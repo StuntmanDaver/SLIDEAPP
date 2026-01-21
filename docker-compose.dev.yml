@@ -1,0 +1,15 @@
+services:
+  consumer-dev:
+    build:
+      context: .
+      dockerfile: apps/consumer/Dockerfile.dev
+    ports:
+      - "8082:8081"
+      - "19000:19000"
+      - "19001:19001"
+    environment:
+      - EXPO_PUBLIC_SUPABASE_URL=https://ssvgfaosfaxdvdxsdwdj.supabase.co
+      - EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzdmdmYW9zZmF4ZHZkeHNkd2RqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzNTIxNzYsImV4cCI6MjA4MzkyODE3Nn0.bUs-YZrNxSqgr5MvJpHx1d59EGW_XlT7B3ET5evbmZ8
+      - EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_placeholder
+    stdin_open: true
+    tty: true

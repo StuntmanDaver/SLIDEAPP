@@ -1,0 +1,22 @@
+**/node_modules
+**/.next
+**/dist
+**/build
+**/out
+**/.expo
+**/.expo-shared
+**/.vercel
+**/.supabase
+*.log
+**/.DS_Store
+.env*
+.git
+.github
+.husky
+apps/admin
+apps/scanner
+supabase
+docs
+scripts
+tests
+apps/consumer/types.d 2.ts

@@ -3,8 +3,8 @@
  */
 
 // QR Token Configuration
-export const QR_TOKEN_TTL_SECONDS = 30;
-export const QR_TOKEN_REFRESH_BEFORE_SECONDS = 5;
+export const QR_TOKEN_TTL_SECONDS = 300; // 5 minutes
+export const QR_TOKEN_REFRESH_BEFORE_SECONDS = 30;
 
 // Pass Balance Defaults
 export const DEFAULT_PASSES_PER_PERIOD = 3;

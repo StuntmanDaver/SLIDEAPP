@@ -1,30 +1,47 @@
+"use client";
+
 import React, { ReactNode } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "../lib/supabase";
 
 interface AdminLayoutProps {
   children: ReactNode;
-  currentPage?: string;
 }
 
-export function AdminLayout({ children, currentPage }: AdminLayoutProps) {
+export function AdminLayout({ children }: AdminLayoutProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
+  const isActive = (path: string) => pathname?.startsWith(path);
+
   return (
     <div className="flex h-screen bg-bg">
       {/* Sidebar */}
-      <aside className="w-64 bg-surface shadow-card border-r border-border-hair overflow-y-auto">
-        <div className="p-6">
+      <aside className="w-64 bg-surface shadow-card border-r border-border-hair overflow-y-auto flex flex-col">
+        <div className="p-6 flex-1">
           <h1 className="text-2xl font-bold text-text-primary mb-8">Slide Admin</h1>
           <nav className="space-y-2">
-            <NavLink href="/dashboard" label="Dashboard" active={currentPage === "dashboard"} />
-            <NavLink href="/plans" label="Plans" active={currentPage === "plans"} />
-            <NavLink href="/users" label="Users" active={currentPage === "users"} />
-            <NavLink href="/staff" label="Staff" active={currentPage === "staff"} />
-            <NavLink href="/logs" label="Scan Logs" active={currentPage === "logs"} />
+            <NavLink href="/dashboard" label="Dashboard" active={isActive("/dashboard")} />
+            <NavLink href="/activity" label="Activity" active={isActive("/activity")} />
+            <NavLink href="/surges" label="Surges" active={isActive("/surges")} />
+            <NavLink href="/plans" label="Plans" active={isActive("/plans")} />
+            <NavLink href="/users" label="Users" active={isActive("/users")} />
+            <NavLink href="/staff" label="Staff" active={isActive("/staff")} />
           </nav>
         </div>
 
         {/* Logout button */}
         <div className="p-6 border-t border-border-hair">
-          <button className="w-full bg-text-primary text-white rounded-lg p-2 text-sm font-medium">
+          <button 
+            onClick={handleSignOut}
+            className="w-full bg-text-primary text-white rounded-lg p-2 text-sm font-medium hover:opacity-90"
+          >
             Sign Out
           </button>
         </div>
@@ -46,16 +63,15 @@ interface NavLinkProps {
 
 function NavLink({ href, label, active }: NavLinkProps) {
   return (
-    <Link href={href}>
-      <a
-        className={`block px-4 py-2 rounded-md text-sm font-medium transition ${
-          active
-            ? "bg-lavender-primary text-text-primary"
-            : "text-text-secondary hover:bg-surface-alt"
-        }`}
-      >
-        {label}
-      </a>
+    <Link
+      href={href}
+      className={`block px-4 py-2 rounded-md text-sm font-medium transition ${
+        active
+          ? "bg-lavender-primary text-text-primary"
+          : "text-text-secondary hover:bg-gray-100"
+      }`}
+    >
+      {label}
     </Link>
   );
 }

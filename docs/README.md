@@ -426,6 +426,13 @@ updates subscriptions
 
 grants/resets pass balances on renewal/payment success
 
+Webhook setup (Stripe Dashboard):
+- Endpoint URL: https://<your-project>.supabase.co/functions/v1/stripe-webhook
+- Required events:
+  - invoice.payment_succeeded
+  - customer.subscription.updated
+  - customer.subscription.deleted
+
 
 
 Auth & Roles

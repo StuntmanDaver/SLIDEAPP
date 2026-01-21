@@ -2,8 +2,9 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getAuthenticatedUser, errorResponse, successResponse } from "../_shared/auth.ts";
 import { generateClaimToken, hashToken } from "../_shared/utils.ts";
+import { checkRateLimit, RATE_LIMIT_CONFIGS, rateLimitErrorResponse } from "../_shared/rate-limit.ts";
 
-serve(async (req: Request) => {
+export const handler = async (req: Request) => {
   if (req.method !== "POST") {
     return errorResponse("Method not allowed", 405);
   }
@@ -18,6 +19,12 @@ serve(async (req: Request) => {
     const user = await getAuthenticatedUser(req, supabase);
     if (!user) {
       return errorResponse("Unauthorized", 401);
+    }
+
+    // Rate limit by user
+    const rateLimit = checkRateLimit(`create:${user.user_id}`, RATE_LIMIT_CONFIGS.createPass);
+    if (!rateLimit.allowed) {
+      return rateLimitErrorResponse(rateLimit.resetAt);
     }
 
     // Check membership is active
@@ -76,7 +83,9 @@ serve(async (req: Request) => {
 
     // Build claim link
     const baseUrl =
-      Deno.env.get("EXPO_PUBLIC_UNIVERSAL_LINK_BASE_URL") || "https://yourdomain.com";
+      Deno.env.get("UNIVERSAL_LINK_BASE_URL") || 
+      Deno.env.get("APP_URL") || 
+      "https://yourdomain.com";
     const claimLink = `slide://claim?token=${plainToken}`;
     const fallbackLink = `${baseUrl}/claim?token=${plainToken}`;
 
@@ -89,4 +98,9 @@ serve(async (req: Request) => {
     console.error("Error:", error);
     return errorResponse("Internal server error", 500);
   }
-});
+};
+
+// Only run server if this is the main module
+if (import.meta.main) {
+  serve(handler);
+}

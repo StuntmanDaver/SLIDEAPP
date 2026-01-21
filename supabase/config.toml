@@ -1,33 +1,82 @@
-# Supabase Project Configuration
+# Slide App - Supabase Local Development Configuration
+# Reference: https://supabase.com/docs/guides/local-development/cli/config
 
-[project]
-# Project ID is stored in .temp/project-ref
-# Full details on: https://supabase.com/docs/guides/local-development
+project_id = "slide"
 
 [api]
-# Port to use for the API server
+enabled = true
 port = 54321
-# Schemas to expose in the API
-schemas = ["public"]
-# Disable the default JWT authentication
-disable_jwt_auth = false
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
 
 [db]
-# Port to use for PostgreSQL
 port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[realtime]
+enabled = true
 
 [studio]
-# Port to use for Supabase Studio
+enabled = true
 port = 54323
+api_url = "http://127.0.0.1"
 
 [inbucket]
-# Port to use for Inbucket (email testing)
+enabled = true
 port = 54324
 
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
 [auth]
-# Enabled auth providers
-enabled_providers = ["apple", "google"]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://127.0.0.1:8080", "slide://"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+
+[auth.external.apple]
+enabled = false
+client_id = ""
+secret = ""
+
+[auth.external.google]
+enabled = false
+client_id = ""
+secret = ""
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+inspector_port = 8083
 
 [analytics]
-# Disable analytics
 enabled = false
+port = 54327
+backend = "postgres"

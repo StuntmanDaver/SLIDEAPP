@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { jwtDecode } from "https://esm.sh/jwt-decode@4.0.0";
 
 export interface AuthToken {
@@ -7,6 +7,11 @@ export interface AuthToken {
   role?: string;
   iat: number;
   exp: number;
+}
+
+export interface StaffUser {
+  role: string;
+  is_active: boolean;
 }
 
 /**
@@ -38,7 +43,7 @@ export function verifyToken(token: string): AuthToken | null {
  */
 export async function getAuthenticatedUser(
   req: Request,
-  supabase: ReturnType<typeof createClient>
+  supabase: SupabaseClient
 ): Promise<{ user_id: string } | null> {
   const token = getAuthToken(req);
   if (!token) return null;
@@ -54,7 +59,7 @@ export async function getAuthenticatedUser(
  */
 export async function getStaffRole(
   user_id: string,
-  supabase: ReturnType<typeof createClient>
+  supabase: SupabaseClient
 ): Promise<string | null> {
   try {
     const { data, error } = await supabase
@@ -64,9 +69,13 @@ export async function getStaffRole(
       .single();
 
     if (error || !data) return null;
-    if (!data.is_active) return null;
+    
+    // Cast data to expected shape since we don't have generated types here
+    const staffData = data as unknown as StaffUser;
+    
+    if (!staffData.is_active) return null;
 
-    return data.role;
+    return staffData.role;
   } catch {
     return null;
   }
@@ -78,7 +87,7 @@ export async function getStaffRole(
 export async function requireRole(
   user_id: string,
   requiredRole: string | string[],
-  supabase: ReturnType<typeof createClient>
+  supabase: SupabaseClient
 ): Promise<boolean> {
   const role = await getStaffRole(user_id, supabase);
   if (!role) return false;
@@ -87,13 +96,19 @@ export async function requireRole(
   return requiredRoles.includes(role);
 }
 
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
+}
+
 /**
  * Create error response
  */
 export function errorResponse(message: string, status: number = 400) {
   return new Response(JSON.stringify({ error: message }), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
 
@@ -103,6 +118,6 @@ export function errorResponse(message: string, status: number = 400) {
 export function successResponse(data: any, status: number = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }

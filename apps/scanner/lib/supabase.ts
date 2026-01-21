@@ -8,10 +8,23 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing Supabase environment variables");
 }
 
+// Custom storage adapter for expo-secure-store
+const ExpoSecureStoreAdapter = {
+  getItem: async (key: string) => {
+    return await SecureStore.getItemAsync(key);
+  },
+  setItem: async (key: string, value: string) => {
+    await SecureStore.setItemAsync(key, value);
+  },
+  removeItem: async (key: string) => {
+    await SecureStore.deleteItemAsync(key);
+  },
+};
+
 // Create Supabase client with secure storage adapter
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: SecureStore as any,
+    storage: ExpoSecureStoreAdapter,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
