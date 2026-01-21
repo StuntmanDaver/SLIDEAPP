@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
+  presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: {
@@ -15,6 +16,27 @@ module.exports = {
         "blush-row": "linear-gradient(to right, #D7C1C3, #E1CECF)",
         "mint-row": "linear-gradient(to right, #BCD0CC, #C7DAD7)",
         "lavender-row": "#C1C1CB",
+        // Liquid Glass material colors (Apple-inspired)
+        glass: {
+          // Ultra-thin - most transparent, subtle presence
+          ultraThin: "rgba(255, 255, 255, 0.15)",
+          // Thin - light transparency
+          thin: "rgba(255, 255, 255, 0.25)",
+          // Regular - balanced translucency
+          regular: "rgba(255, 255, 255, 0.35)",
+          // Thick - more visible but still translucent
+          thick: "rgba(255, 255, 255, 0.50)",
+          // Clear variant - minimal tint
+          clear: "rgba(255, 255, 255, 0.08)",
+          // Legacy
+          light: "rgba(255, 255, 255, 0.72)",
+          medium: "rgba(255, 255, 255, 0.50)",
+          dark: "rgba(255, 255, 255, 0.30)",
+        },
+        "glass-border": "rgba(255, 255, 255, 0.12)",
+        "glass-border-strong": "rgba(255, 255, 255, 0.20)",
+        "glass-highlight": "rgba(255, 255, 255, 0.40)",
+        "glass-shadow": "rgba(0, 0, 0, 0.08)",
       },
       borderRadius: {
         lg: "28px",

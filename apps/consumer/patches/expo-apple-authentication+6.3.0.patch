@@ -1,0 +1,12 @@
+diff --git a/ios/AppleAuthenticationExceptions.swift b/ios/AppleAuthenticationExceptions.swift
+index 1234567..abcdefg 100644
+--- a/ios/AppleAuthenticationExceptions.swift
++++ b/ios/AppleAuthenticationExceptions.swift
+@@ -61,5 +61,7 @@ func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception
+     return RequestFailedException()
+   case .notInteractive:
+     return RequestNotInteractiveException()
++  @unknown default:
++    return RequestUnknownException()
+   }
+ }

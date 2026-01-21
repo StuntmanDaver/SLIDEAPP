@@ -4,17 +4,49 @@
   "description": "Slide - Nightclub Line-Skip Pass App",
   "private": true,
   "scripts": {
-    "dev": "pnpm dev",
-    "build": "pnpm build",
-    "test": "pnpm test",
-    "lint": "pnpm lint",
-    "type-check": "pnpm type-check",
-    "seed": "pnpm --filter ./scripts seed"
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "type-check": "pnpm -r type-check",
+    "seed": "pnpm --filter ./scripts seed",
+    "setup:stripe": "npx ts-node scripts/setup-stripe.ts",
+    "postinstall": "node scripts/patch-expo-device.js && node apps/consumer/scripts/patch-expo-modules.js",
+    "prepare": "husky",
+    "docker:build": "docker compose --env-file .env.local build",
+    "docker:up": "docker compose --env-file .env.local up",
+    "docker:down": "docker compose --env-file .env.local down",
+    "docker:test": "docker compose --env-file .env.local --profile test run --rm test-backend && docker compose --env-file .env.local --profile test run --rm test-frontend",
+    "docker:up:all": "supabase start && pnpm docker:up",
+    "docker:test:all": "./scripts/docker-test-all.sh"
   },
   "workspaces": [
     "apps/*",
-    "packages/*",
-    "supabase"
+    "packages/*"
   ],
-  "dependencies": {}
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "pnpm lint",
+      "pnpm prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "pnpm prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.28.6",
+    "stripe": "^14.13.0",
+    "dotenv": "^16.4.5"
+  }
 }
