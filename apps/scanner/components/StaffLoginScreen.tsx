@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
+import { View, Text, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { supabase } from "../lib/supabase";
 import * as SecureStore from "expo-secure-store";
-import { FontAwesome } from "@expo/vector-icons";
-import { GlassCard } from "./glass";
-import { LinearGradient } from "expo-linear-gradient";
 
 export function StaffLoginScreen() {
   const [email, setEmail] = useState("");
@@ -14,7 +11,7 @@ export function StaffLoginScreen() {
 
   const handleSignIn = async () => {
     Keyboard.dismiss();
-
+    
     if (!email || !password) {
       setError("Please enter email and password");
       return;
@@ -72,111 +69,64 @@ export function StaffLoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAvoidingView 
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-bg"
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
+        <ScrollView 
           contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
           keyboardShouldPersistTaps="handled"
         >
           <View className="flex-1 justify-center items-center px-6">
-            {/* Logo Section */}
-            <View className="items-center mb-10">
-              <GlassCard intensity="thin" floating>
-                <View className="w-20 h-20 items-center justify-center">
-                  <FontAwesome name="qrcode" size={40} color="#090908" />
-                </View>
-              </GlassCard>
-              <Text className="text-3xl font-bold text-text-primary mt-6 text-center">
+            <View className="w-full max-w-xs">
+              <Text className="text-3xl font-bold text-text-primary mb-2 text-center">
                 Slide Scanner
               </Text>
-              <Text className="text-sm text-text-secondary text-center mt-1">
-                Staff Portal
+              <Text className="text-sm text-text-secondary text-center mb-8">
+                Staff Login
               </Text>
-            </View>
 
-            {/* Login Form Card */}
-            <GlassCard intensity="ultraThin" floating className="w-full max-w-sm">
-              <View className="p-6">
-                {error && (
-                  <View className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 mb-4">
-                    <View className="flex-row items-center">
-                      <FontAwesome name="exclamation-circle" size={16} color="#ef4444" />
-                      <Text className="text-red-600 text-sm ml-2 flex-1">{error}</Text>
-                    </View>
-                  </View>
+              {error && (
+                <View className="bg-red-100 rounded-lg p-3 mb-4">
+                  <Text className="text-red-800 text-sm">{error}</Text>
+                </View>
+              )}
+
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor="#7D737B"
+                value={email}
+                onChangeText={setEmail}
+                editable={!isLoading}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="bg-surface border border-border-hair rounded-lg p-3 mb-4 text-text-primary"
+              />
+
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="#7D737B"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                editable={!isLoading}
+                onSubmitEditing={handleSignIn}
+                returnKeyType="go"
+                className="bg-surface border border-border-hair rounded-lg p-3 mb-6 text-text-primary"
+              />
+
+              <Pressable
+                onPress={handleSignIn}
+                disabled={isLoading}
+                className="bg-text-primary rounded-lg p-4 flex-row items-center justify-center"
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-semibold">Sign In</Text>
                 )}
-
-                {/* Email Input */}
-                <View className="mb-4">
-                  <Text className="text-xs text-text-secondary uppercase tracking-wider mb-2 ml-1">
-                    Email
-                  </Text>
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="envelope" size={16} color="#7D737B" style={styles.inputIcon} />
-                    <TextInput
-                      placeholder="staff@venue.com"
-                      placeholderTextColor="#7D737B"
-                      value={email}
-                      onChangeText={setEmail}
-                      editable={!isLoading}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      style={styles.input}
-                    />
-                  </View>
-                </View>
-
-                {/* Password Input */}
-                <View className="mb-6">
-                  <Text className="text-xs text-text-secondary uppercase tracking-wider mb-2 ml-1">
-                    Password
-                  </Text>
-                  <View style={styles.inputContainer}>
-                    <FontAwesome name="lock" size={16} color="#7D737B" style={styles.inputIcon} />
-                    <TextInput
-                      placeholder="Enter password"
-                      placeholderTextColor="#7D737B"
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry
-                      editable={!isLoading}
-                      onSubmitEditing={handleSignIn}
-                      returnKeyType="go"
-                      style={styles.input}
-                    />
-                  </View>
-                </View>
-
-                {/* Sign In Button */}
-                <Pressable
-                  onPress={handleSignIn}
-                  disabled={isLoading}
-                  style={({ pressed }) => [
-                    styles.signInButton,
-                    pressed && styles.signInButtonPressed,
-                    isLoading && styles.signInButtonDisabled,
-                  ]}
-                >
-                  {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <>
-                      <Text style={styles.signInText}>Sign In</Text>
-                      <FontAwesome name="arrow-right" size={16} color="#FFFFFF" />
-                    </>
-                  )}
-                </Pressable>
-              </View>
-            </GlassCard>
-
-            {/* Footer */}
-            <View className="mt-8 items-center">
-              <Text className="text-text-secondary text-xs">
-                Staff access only
-              </Text>
+              </Pressable>
             </View>
           </View>
         </ScrollView>

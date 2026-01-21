@@ -21,9 +21,8 @@ function ClaimContent() {
     }
   }, [token]);
 
-  // TODO: Update with real App Store URLs once apps are published
-  const iosUrl = "https://apps.apple.com/app/slide/id0000000000";
-  const androidUrl = "https://play.google.com/store/apps/details?id=com.slidevenue.consumer";
+  const iosUrl = "https://apps.apple.com/app/slide/id0000000000"; // Replace with real App Store URL
+  const androidUrl = "https://play.google.com/store/apps/details?id=com.slidevenue.consumer"; // Replace with real Play Store URL
 
   return (
     <div className="min-h-screen bg-[#E1E2DD] flex flex-col items-center justify-center p-6">

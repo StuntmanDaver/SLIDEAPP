@@ -21,7 +21,7 @@ export function usePasses(): UsePassesResult {
 
     try {
       setError(null);
-
+      
       // Fetch passes where user is issuer OR owner
       const { data, error: fetchError } = await supabase
         .from("passes")

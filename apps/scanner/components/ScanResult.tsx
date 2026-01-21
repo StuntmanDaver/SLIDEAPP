@@ -1,9 +1,7 @@
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { SCAN_RESULTS } from "@slide/shared";
-import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 
 interface ScanResultProps {
   result: keyof typeof SCAN_RESULTS;
@@ -11,181 +9,69 @@ interface ScanResultProps {
   onDismiss: () => void;
 }
 
-const RESULT_CONFIG = {
-  [SCAN_RESULTS.VALID]: {
-    gradientColors: ['rgba(34, 197, 94, 0.95)', 'rgba(22, 163, 74, 0.98)'] as const,
-    iconName: 'check-circle',
-    title: 'VALID',
-    message: 'Access Granted',
-    iconBgColor: 'rgba(255,255,255,0.2)',
-  },
-  [SCAN_RESULTS.USED]: {
-    gradientColors: ['rgba(234, 179, 8, 0.95)', 'rgba(202, 138, 4, 0.98)'] as const,
-    iconName: 'exclamation-circle',
-    title: 'ALREADY USED',
-    message: 'This pass was already redeemed',
-    iconBgColor: 'rgba(255,255,255,0.2)',
-  },
-  [SCAN_RESULTS.EXPIRED]: {
-    gradientColors: ['rgba(249, 115, 22, 0.95)', 'rgba(234, 88, 12, 0.98)'] as const,
-    iconName: 'clock-o',
-    title: 'EXPIRED',
-    message: 'QR code expired - ask to refresh',
-    iconBgColor: 'rgba(255,255,255,0.2)',
-  },
-  [SCAN_RESULTS.REVOKED]: {
-    gradientColors: ['rgba(220, 38, 38, 0.95)', 'rgba(185, 28, 28, 0.98)'] as const,
-    iconName: 'ban',
-    title: 'REVOKED',
-    message: 'This pass has been revoked',
-    iconBgColor: 'rgba(255,255,255,0.2)',
-  },
-  [SCAN_RESULTS.INVALID]: {
-    gradientColors: ['rgba(239, 68, 68, 0.95)', 'rgba(220, 38, 38, 0.98)'] as const,
-    iconName: 'times-circle',
-    title: 'INVALID',
-    message: 'QR code not recognized',
-    iconBgColor: 'rgba(255,255,255,0.2)',
-  },
-};
-
 export function ScanResult({ result, passId, onDismiss }: ScanResultProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDismiss();
-    }, 3000);
+    }, 3000); // Auto dismiss after 3 seconds
 
     return () => clearTimeout(timer);
   }, [onDismiss]);
 
-  const config = RESULT_CONFIG[result] || RESULT_CONFIG[SCAN_RESULTS.INVALID];
-  const screenHeight = Dimensions.get("window").height;
+  let backgroundColor = "bg-red-500";
+  let iconName: any = "times-circle";
+  let title = "Invalid";
+  let message = "This pass is not valid.";
+
+  switch (result) {
+    case SCAN_RESULTS.VALID:
+      backgroundColor = "bg-green-500";
+      iconName = "check-circle";
+      title = "Valid Pass";
+      message = "Access Granted";
+      break;
+    case SCAN_RESULTS.USED:
+      backgroundColor = "bg-yellow-500";
+      iconName = "exclamation-circle";
+      title = "Already Used";
+      message = "Pass has already been redeemed.";
+      break;
+    case SCAN_RESULTS.EXPIRED:
+      backgroundColor = "bg-orange-500";
+      iconName = "clock-o";
+      title = "Expired";
+      message = "QR code expired. Ask to refresh.";
+      break;
+    case SCAN_RESULTS.REVOKED:
+      backgroundColor = "bg-red-600";
+      iconName = "ban";
+      title = "Revoked";
+      message = "Pass has been revoked.";
+      break;
+    case SCAN_RESULTS.INVALID:
+    default:
+      backgroundColor = "bg-red-500";
+      iconName = "times-circle";
+      title = "Invalid";
+      message = "QR code not recognized.";
+      break;
+  }
 
   return (
     <TouchableOpacity
-      activeOpacity={0.95}
+      activeOpacity={0.9}
       onPress={onDismiss}
-      style={[styles.container, { height: screenHeight * 0.45 }]}
+      className={`absolute bottom-0 left-0 right-0 ${backgroundColor} p-8 items-center justify-center rounded-t-3xl shadow-lg z-50`}
+      style={{ height: Dimensions.get("window").height * 0.4 }}
     >
-      {/* Blur background on iOS */}
-      {Platform.OS === 'ios' && (
-        <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+      <FontAwesome name={iconName} size={64} color="white" />
+      <Text className="text-white text-4xl font-bold mt-4 mb-2">{title}</Text>
+      <Text className="text-white text-xl opacity-90 text-center">{message}</Text>
+      {passId && (
+        <Text className="text-white text-sm opacity-70 mt-4">
+          ID: ...{passId.slice(-8)}
+        </Text>
       )}
-
-      {/* Gradient overlay */}
-      <LinearGradient
-        colors={[...config.gradientColors]}
-        style={StyleSheet.absoluteFill}
-      />
-
-      {/* Specular highlight */}
-      <LinearGradient
-        colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0)']}
-        style={styles.specularHighlight}
-      />
-
-      {/* Content */}
-      <View style={styles.content}>
-        {/* Icon with glass circle */}
-        <View style={[styles.iconContainer, { backgroundColor: config.iconBgColor }]}>
-          <FontAwesome name={config.iconName as any} size={48} color="white" />
-        </View>
-
-        {/* Title */}
-        <Text style={styles.title}>{config.title}</Text>
-
-        {/* Message */}
-        <Text style={styles.message}>{config.message}</Text>
-
-        {/* Pass ID */}
-        {passId && (
-          <View style={styles.passIdContainer}>
-            <Text style={styles.passIdLabel}>Pass ID</Text>
-            <Text style={styles.passId}>...{passId.slice(-8)}</Text>
-          </View>
-        )}
-
-        {/* Tap hint */}
-        <Text style={styles.tapHint}>Tap to dismiss</Text>
-      </View>
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    overflow: 'hidden',
-    zIndex: 50,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 20,
-  },
-  specularHighlight: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-    paddingBottom: 40,
-  },
-  iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  title: {
-    color: '#FFFFFF',
-    fontSize: 36,
-    fontWeight: 'bold',
-    letterSpacing: 3,
-    marginBottom: 8,
-  },
-  message: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 18,
-    textAlign: 'center',
-  },
-  passIdContainer: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  passIdLabel: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  passId: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 14,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  tapHint: {
-    position: 'absolute',
-    bottom: 20,
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 12,
-  },
-});

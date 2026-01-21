@@ -4,6 +4,7 @@ import { getAuthenticatedUser, requireRole, errorResponse, successResponse, cors
 import { parseJsonBody } from "../_shared/utils.ts";
 
 serve(async (req: Request) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -18,54 +19,25 @@ serve(async (req: Request) => {
   );
 
   try {
-    const user = await getAuthenticatedUser(req, supabase);
-    if (!user) return errorResponse("Unauthorized", 401);
+    const adminUser = await getAuthenticatedUser(req, supabase);
+    if (!adminUser) return errorResponse("Unauthorized", 401);
 
-    const isAdmin = await requireRole(user.user_id, "admin", supabase);
+    const isAdmin = await requireRole(adminUser.user_id, "admin", supabase);
     if (!isAdmin) return errorResponse("Forbidden", 403);
 
     const body = await parseJsonBody(req);
     const { pass_id } = body || {};
 
-    if (!pass_id) {
-      return errorResponse("pass_id is required", 400);
-    }
+    if (!pass_id) return errorResponse("Pass ID is required", 400);
 
-    // Check if pass exists and is not already revoked or redeemed
-    const { data: pass, error: fetchError } = await supabase
+    const { error } = await supabase
       .from("passes")
-      .select("pass_id, status")
-      .eq("pass_id", pass_id)
-      .single();
+      .update({ status: "revoked" })
+      .eq("pass_id", pass_id);
 
-    if (fetchError || !pass) {
-      return errorResponse("Pass not found", 404);
-    }
+    if (error) throw error;
 
-    if (pass.status === "revoked") {
-      return errorResponse("Pass is already revoked", 400);
-    }
-
-    if (pass.status === "redeemed") {
-      return errorResponse("Cannot revoke a redeemed pass", 400);
-    }
-
-    // Update pass status to revoked
-    const { data: updatedPass, error: updateError } = await supabase
-      .from("passes")
-      .update({ status: "revoked", revoked_at: new Date().toISOString() })
-      .eq("pass_id", pass_id)
-      .select()
-      .single();
-
-    if (updateError) {
-      throw updateError;
-    }
-
-    return successResponse({
-      success: true,
-      pass: updatedPass,
-    });
+    return successResponse({ success: true });
   } catch (error) {
     console.error("Error:", error);
     return errorResponse("Internal server error", 500);

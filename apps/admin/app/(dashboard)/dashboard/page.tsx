@@ -133,8 +133,8 @@ export default function DashboardPage() {
       <div className="bg-surface rounded-xl p-6 shadow-card">
         <h2 className="text-xl font-bold text-text-primary mb-4">Quick Actions</h2>
         <div className="flex gap-4">
-          <a href="/activity" className="bg-lavender-primary text-text-primary px-4 py-2 rounded-lg font-medium">
-            View Activity
+          <a href="/logs" className="bg-lavender-primary text-text-primary px-4 py-2 rounded-lg font-medium">
+            View Live Logs
           </a>
           <a href="/staff" className="bg-surface border border-border-hair px-4 py-2 rounded-lg font-medium">
             Manage Staff

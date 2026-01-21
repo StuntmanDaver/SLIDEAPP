@@ -4,44 +4,6 @@ All notable changes to the Slide app will be documented here.
 
 ## [Unreleased]
 
-## [0.2.1] - 2026-01-21
-
-### Added - Stripe Customer Portal Configuration
-- Created `scripts/setup-stripe.ts` - automated Stripe setup script that:
-  - Creates Products for each membership tier (Basic, Plus, Premium)
-  - Creates Prices (monthly subscriptions and one-time purchases)
-  - Configures the Stripe Customer Portal with cancellation, payment updates, and invoice history
-  - Outputs SQL for database updates
-- Added `pnpm setup:stripe` command to package.json
-- Added `stripe` (^14.13.0) and `dotenv` (^16.4.5) dependencies
-
-### Changed
-- Updated `stripe-create-portal-session` Edge Function to use app deep link (`slide://account`) as return URL
-
-### Configured - Stripe (LIVE Mode)
-- **Products Created:**
-  - `prod_TpaVYT4gI2diaL` - Slide Basic ($20/month, 3 passes)
-  - `prod_TpaVYx5XHscm3U` - Slide Plus ($50/month, 6 passes)
-  - `prod_TpaVjlSrAzaQN1` - Slide Premium ($80/month, 9 passes)
-- **Prices Created:**
-  - Basic Monthly: `price_1SrvKTC1JUIZB7aRRbLYoCuR`
-  - Basic One-Time: `price_1SrvKTC1JUIZB7aRDuE5hmZr`
-  - Plus Monthly: `price_1SrvKTC1JUIZB7aR5lo9ZPcv`
-  - Plus One-Time: `price_1SrvKUC1JUIZB7aR9QwDlLUe`
-  - Premium Monthly: `price_1SrvKUC1JUIZB7aRcGJxMqyO`
-  - Premium One-Time: `price_1SrvKUC1JUIZB7aR9BSFJXlX`
-- **Portal Configuration:** `bpc_1SrvLQC1JUIZB7aRhn6VPOKf`
-  - Customer profile updates (email, name, phone, address)
-  - Payment method updates
-  - Invoice history
-  - Subscription cancellation (at period end, with reason collection)
-  - Subscription plan switching with proration
-- **Database Updated:** All 6 plans updated with real Stripe price IDs
-- **Supabase Secrets:** `STRIPE_SECRET_KEY` added to Edge Functions
-
-### Migration
-- Added `20260121000001_update_stripe_price_ids.sql` with applied Stripe price IDs
-
 ## [0.2.0] - 2026-01-13
 
 ### Added - Phase 10: Consumer App Core

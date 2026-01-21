@@ -6,38 +6,6 @@ import { verifyQRToken } from "../_shared/qr-token.ts";
 import { SCAN_RESULTS } from "../_shared/constants.ts";
 import { checkRateLimit, RATE_LIMIT_CONFIGS, rateLimitErrorResponse } from "../_shared/rate-limit.ts";
 
-interface ExpoPushMessage {
-  to: string;
-  title: string;
-  body: string;
-  sound?: "default";
-  priority?: "high" | "normal";
-  data?: Record<string, unknown>;
-}
-
-async function sendExpoPushNotifications(messages: ExpoPushMessage[]): Promise<void> {
-  if (messages.length === 0) return;
-
-  const batchSize = 100;
-  for (let i = 0; i < messages.length; i += batchSize) {
-    const batch = messages.slice(i, i + batchSize);
-    const response = await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Accept-Encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(batch),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Expo Push API error:", errorText);
-    }
-  }
-}
-
 serve(async (req: Request) => {
   if (req.method !== "POST") {
     return errorResponse("Method not allowed", 405);

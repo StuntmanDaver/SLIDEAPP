@@ -100,7 +100,4 @@ export const handler = async (req: Request) => {
   }
 };
 
-// Only run server if this is the main module
-if (import.meta.main) {
-  serve(handler);
-}
+serve(handler);

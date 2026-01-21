@@ -7,10 +7,6 @@ FROM base AS builder
 WORKDIR /app
 COPY . .
 RUN pnpm install --frozen-lockfile
-
-ARG EXPO_PUBLIC_SUPABASE_URL
-ARG EXPO_PUBLIC_SUPABASE_ANON_KEY
-
 RUN pnpm --filter slide-consumer build:web
 
 FROM nginx:stable-alpine AS runner

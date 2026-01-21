@@ -1,56 +1,33 @@
 import { View, Text, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { initSubscription } from "../lib/api";
-import { getDeviceInfo } from "../lib/device";
 import { FontAwesome } from "@expo/vector-icons";
-import type { BillingType, DeviceInfo, Plan } from "@slide/shared";
-import { setOptimisticMembership } from "../lib/optimistic-membership";
 
 interface MembershipPurchaseProps {
   planId: string;
-  plan: Plan;
-  billingType?: BillingType;
   onSuccess?: () => void;
 }
 
-export function MembershipPurchase({ planId, plan, billingType = "subscription", onSuccess }: MembershipPurchaseProps) {
+export function MembershipPurchase({ planId, onSuccess }: MembershipPurchaseProps) {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
-  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
-
-  // Fetch device info on mount
-  useEffect(() => {
-    getDeviceInfo().then(setDeviceInfo).catch(console.error);
-  }, []);
 
   const initializePaymentSheet = async () => {
     setLoading(true);
 
     try {
-      const { customerId, ephemeralKey, paymentIntent } = await initSubscription(
-        planId,
-        deviceInfo || undefined
-      );
+      const { customerId, ephemeralKey, paymentIntent } = await initSubscription(planId);
 
       const { error } = await initPaymentSheet({
         merchantDisplayName: "Slide",
         customerId: customerId,
         customerEphemeralKeySecret: ephemeralKey,
         paymentIntentClientSecret: paymentIntent,
-        allowsDelayedPaymentMethods: billingType === "subscription",
-        // Enable Apple Pay and Google Pay
-        applePay: {
-          merchantCountryCode: "US",
-        },
-        googlePay: {
-          merchantCountryCode: "US",
-          testEnv: __DEV__,
-        },
+        allowsDelayedPaymentMethods: true,
         defaultBillingDetails: {
-          name: "",
-        },
-        returnURL: "slide://payment-complete",
+          name: 'Jane Doe',
+        }
       });
 
       if (error) {
@@ -60,13 +37,8 @@ export function MembershipPurchase({ planId, plan, billingType = "subscription",
       }
 
       await openPaymentSheet();
-    } catch (error: any) {
-      // Check if it's a device binding error
-      if (error?.message?.includes("device") || error?.message?.includes("bound")) {
-        Alert.alert("Device Binding Error", error.message);
-      } else {
-        Alert.alert("Error", "Failed to initialize payment");
-      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to initialize payment");
       setLoading(false);
     }
   };
@@ -76,27 +48,12 @@ export function MembershipPurchase({ planId, plan, billingType = "subscription",
 
     setLoading(false);
     if (error) {
-      if (error.code !== "Canceled") {
-        Alert.alert("Error", error.message);
-      }
+      Alert.alert("Error", error.message);
     } else {
-      await setOptimisticMembership({
-        plan_id: plan.plan_id,
-        billing_type: billingType,
-        passes_per_period: plan.passes_per_period,
-        plan_name: plan.name,
-        tier: plan.tier,
-        created_at: new Date().toISOString(),
-      });
-      const successMessage = billingType === "subscription"
-        ? "Your subscription is now active!"
-        : "Your purchase is complete!";
-      Alert.alert("Success", successMessage);
+      Alert.alert("Success", "Your order is confirmed!");
       onSuccess?.();
     }
   };
-
-  const buttonText = billingType === "subscription" ? "Subscribe Now" : "Purchase Now";
 
   return (
     <Pressable
@@ -108,7 +65,7 @@ export function MembershipPurchase({ planId, plan, billingType = "subscription",
         <ActivityIndicator color="#FFFFFF" />
       ) : (
         <>
-          <Text className="text-surface font-bold text-lg mr-2">{buttonText}</Text>
+          <Text className="text-surface font-bold text-lg mr-2">Subscribe Now</Text>
           <FontAwesome name="lock" size={16} color="#FFFFFF" />
         </>
       )}

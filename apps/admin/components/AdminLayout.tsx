@@ -28,11 +28,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <h1 className="text-2xl font-bold text-text-primary mb-8">Slide Admin</h1>
           <nav className="space-y-2">
             <NavLink href="/dashboard" label="Dashboard" active={isActive("/dashboard")} />
-            <NavLink href="/activity" label="Activity" active={isActive("/activity")} />
-            <NavLink href="/surges" label="Surges" active={isActive("/surges")} />
             <NavLink href="/plans" label="Plans" active={isActive("/plans")} />
             <NavLink href="/users" label="Users" active={isActive("/users")} />
             <NavLink href="/staff" label="Staff" active={isActive("/staff")} />
+            <NavLink href="/logs" label="Scan Logs" active={isActive("/logs")} />
           </nav>
         </div>
 

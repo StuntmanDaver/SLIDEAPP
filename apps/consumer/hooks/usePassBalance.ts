@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
 import type { PassBalance } from "@slide/shared";
-import { clearOptimisticMembership, getOptimisticMembership } from "../lib/optimistic-membership";
 
 interface UsePassBalanceResult {
   balance: PassBalance | null;
@@ -30,26 +29,13 @@ export function usePassBalance(): UsePassBalanceResult {
 
       if (fetchError) {
         if (fetchError.code === "PGRST116") {
-          const optimistic = await getOptimisticMembership();
-          if (optimistic && Date.now() - Date.parse(optimistic.created_at) < 10 * 60 * 1000) {
-            const now = new Date();
-            setBalance({
-              user_id: user.id,
-              period_start: now.toISOString(),
-              period_end: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-              passes_allowed: optimistic.passes_per_period,
-              passes_used: 0,
-            });
-          } else {
-            // No row found, might be a new user without a subscription yet
-            setBalance(null);
-          }
+          // No row found, might be a new user without a subscription yet
+          setBalance(null);
         } else {
           throw fetchError;
         }
       } else {
         setBalance(data);
-        await clearOptimisticMembership();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch balance");

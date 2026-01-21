@@ -36,53 +36,10 @@ services:
     build:
       context: .
       dockerfile: apps/consumer/Dockerfile
-      args:
-        EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL}
-        EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY}
     ports:
       - "8080:80"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
-  # Backend tests (Deno)
-  test-backend:
-    image: denoland/deno:1.46.3
-    working_dir: /app
-    volumes:
-      - .:/app
-    environment:
-      - SUPABASE_URL=${SUPABASE_URL:-http://host.docker.internal:54321}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: >
-      sh -c "deno test --allow-net --allow-env supabase/functions/_shared/qr-token.test.ts supabase/functions/create-pass/index.test.ts tests/integration/pass-lifecycle.test.ts"
-    profiles:
-      - test
-
-  # Frontend checks (Admin)
-  test-frontend:
-    image: node:20-slim
-    working_dir: /app
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/admin/node_modules
-      - /app/packages/shared/node_modules
-    environment:
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://host.docker.internal:54321}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-    command: >
-      sh -c "corepack enable &&
-             pnpm install &&
-             pnpm --filter ./apps/admin lint &&
-             pnpm --filter ./apps/admin type-check &&
-             pnpm --filter ./apps/admin build"
-    profiles:
-      - test
 
   # Development mode - runs all apps with hot reload
   dev:

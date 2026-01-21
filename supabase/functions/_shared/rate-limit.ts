@@ -22,7 +22,6 @@ export const RATE_LIMIT_CONFIGS = {
   claim: { windowMs: 60000, maxRequests: 5 },       // 5 claims per minute
   redeem: { windowMs: 1000, maxRequests: 10 },      // 10 scans per second per device
   createPass: { windowMs: 60000, maxRequests: 10 }, // 10 passes per minute
-  surgeClaim: { windowMs: 60000, maxRequests: 5 },  // 5 surge claim attempts per minute
 } as const;
 
 /**

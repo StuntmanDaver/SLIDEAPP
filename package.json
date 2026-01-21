@@ -10,15 +10,10 @@
     "lint": "pnpm -r lint",
     "type-check": "pnpm -r type-check",
     "seed": "pnpm --filter ./scripts seed",
-    "setup:stripe": "npx ts-node scripts/setup-stripe.ts",
-    "postinstall": "node scripts/patch-expo-device.js && node apps/consumer/scripts/patch-expo-modules.js",
     "prepare": "husky",
-    "docker:build": "docker compose --env-file .env.local build",
-    "docker:up": "docker compose --env-file .env.local up",
-    "docker:down": "docker compose --env-file .env.local down",
-    "docker:test": "docker compose --env-file .env.local --profile test run --rm test-backend && docker compose --env-file .env.local --profile test run --rm test-frontend",
-    "docker:up:all": "supabase start && pnpm docker:up",
-    "docker:test:all": "./scripts/docker-test-all.sh"
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up",
+    "docker:down": "docker compose down"
   },
   "workspaces": [
     "apps/*",
@@ -45,8 +40,6 @@
     ]
   },
   "dependencies": {
-    "@babel/runtime": "^7.28.6",
-    "stripe": "^14.13.0",
-    "dotenv": "^16.4.5"
+    "@babel/runtime": "^7.28.6"
   }
 }
