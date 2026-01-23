@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#E1E2DD"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "expo-router",
       "expo-camera"
@@ -24,11 +26,23 @@
     },
     "android": {
       "package": "com.slidevenue.scanner",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "726f8e7e-d84d-4056-bf93-0ea162d63985"
+      }
     }
   }
 }
