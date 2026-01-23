@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "postinstall": "node scripts/patch-expo-modules.js"
+    "postinstall": "patch-package || true && node scripts/patch-expo-modules.js"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.6",
