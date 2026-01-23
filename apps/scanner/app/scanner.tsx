@@ -8,7 +8,7 @@ import { getDeviceId } from '../lib/device';
 import { addScanToHistory } from '../lib/history';
 import { router } from 'expo-router';
 import { ScanResult } from '../components/ScanResult';
-import { SCAN_RESULTS } from '@slide/shared';
+import { SCAN_RESULTS } from '../lib/shared';
 import * as Haptics from 'expo-haptics';
 
 export default function ScannerScreen() {

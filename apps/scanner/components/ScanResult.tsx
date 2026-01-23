@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect } from "react";
-import { SCAN_RESULTS } from "@slide/shared";
+import { SCAN_RESULTS } from "../lib/shared";
 
 interface ScanResultProps {
   result: keyof typeof SCAN_RESULTS;

@@ -4,7 +4,7 @@ import { getScanHistory, clearHistory, type ScanRecord } from '../lib/history';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { SCAN_RESULTS } from '@slide/shared';
+import { SCAN_RESULTS } from '../lib/shared';
 
 export default function HistoryScreen() {
   const [history, setHistory] = useState<ScanRecord[]>([]);

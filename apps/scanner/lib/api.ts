@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import type { RedeemPassResponse } from "@slide/shared";
+import type { RedeemPassResponse } from "./shared";
 
 export async function redeemPass(qrToken: string, deviceId: string): Promise<RedeemPassResponse> {
   const { data, error } = await supabase.functions.invoke<RedeemPassResponse>("redeem-pass", {

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SCAN_RESULTS } from '@slide/shared';
+import { SCAN_RESULTS } from './shared';
 
 const HISTORY_KEY = 'scan_history';
 const MAX_HISTORY = 20;

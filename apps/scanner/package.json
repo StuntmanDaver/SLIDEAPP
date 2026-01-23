@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "postinstall": "PATCH_PACKAGE_MANAGER=pnpm patch-package"
+    "postinstall": "patch-package || true && node scripts/patch-expo-modules.js"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.6",
@@ -23,7 +23,6 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.15",
     "@react-navigation/routers": "^7.5.3",
-    "@slide/shared": "workspace:*",
     "@supabase/supabase-js": "^2.38.4",
     "@types/invariant": "^2.2.37",
     "deprecated-react-native-prop-types": "^5.0.0",
