@@ -265,6 +265,45 @@ export function AuthScreen() {
               </Pressable>
             )}
           </View>
+
+          {/* Dev Skip Button - only in development */}
+          {__DEV__ && (
+            <View className="mt-4 pt-4 border-t border-glass-border">
+              <Pressable
+                onPress={async () => {
+                  setIsLoading(true);
+                  try {
+                    // Sign in with a dev test account or create anonymous session
+                    const { error } = await supabase.auth.signInWithPassword({
+                      email: "dev@test.com",
+                      password: "devtest123",
+                    });
+                    if (error) {
+                      // If dev account doesn't exist, try anonymous sign up
+                      const { error: signUpError } = await supabase.auth.signUp({
+                        email: `dev-${Date.now()}@test.local`,
+                        password: "devtest123",
+                      });
+                      if (signUpError) {
+                        setError("Dev skip failed: " + signUpError.message);
+                      }
+                    }
+                  } catch (err) {
+                    setError("Dev skip failed");
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                disabled={isLoading}
+                className="bg-orange-500/80 rounded-lg p-3 items-center"
+              >
+                <Text className="text-white font-semibold text-sm">🛠 Dev Skip (Testing Only)</Text>
+              </Pressable>
+              <Text className="text-text-secondary text-xs text-center mt-2">
+                This button only appears in development builds
+              </Text>
+            </View>
+          )}
         </View>
       </GlassCard>
     </View>
