@@ -40,6 +40,7 @@
     "production": {
       "ios": {
         "appleId": "ketchel.david@gmail.com",
+        "ascAppId": "6758187671",
         "appleTeamId": "826B844673"
       }
     }
