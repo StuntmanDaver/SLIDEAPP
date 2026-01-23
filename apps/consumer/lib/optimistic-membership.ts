@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-import type { BillingType, PlanTier } from "@slide/shared";
+import type { BillingType, PlanTier } from "./shared";
 
 const OPTIMISTIC_KEY = "optimistic_membership";
 

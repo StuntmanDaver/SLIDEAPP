@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { checkDeviceBinding, transferDevice } from "../lib/api";
 import { getDeviceInfo } from "../lib/device";
 import { useAuth } from "./useAuth";
-import type { CheckDeviceBindingResponse, DeviceInfo } from "@slide/shared";
+import type { CheckDeviceBindingResponse, DeviceInfo } from "../lib/shared";
 
 interface UseDeviceBindingResult {
   deviceInfo: DeviceInfo | null;

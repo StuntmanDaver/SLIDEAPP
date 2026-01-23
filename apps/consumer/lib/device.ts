@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import * as Application from "expo-application";
 import * as Device from "expo-device";
-import type { DeviceInfo, DevicePlatform } from "@slide/shared";
+import type { DeviceInfo, DevicePlatform } from "./shared";
 
 /**
  * Get unique device information for device binding

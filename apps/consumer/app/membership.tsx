@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { usePlans } from "../hooks/usePlans";
 import { MembershipPurchase } from "../components/MembershipPurchase";
-import type { BillingType, PlanTier } from "@slide/shared";
+import type { BillingType, PlanTier } from "../lib/shared";
 import { GlassCard } from "../components/glass";
 
 const TIER_CONFIG: Record<PlanTier, {

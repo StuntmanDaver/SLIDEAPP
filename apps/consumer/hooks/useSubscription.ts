@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
-import type { Subscription } from "@slide/shared";
+import type { Subscription } from "../lib/shared";
 
 interface UseSubscriptionResult {
   subscription: Subscription | null;

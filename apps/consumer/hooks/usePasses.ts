@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
-import type { Pass } from "@slide/shared";
+import type { Pass } from "../lib/shared";
 
 interface UsePassesResult {
   passes: Pass[];

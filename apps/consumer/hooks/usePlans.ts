@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPlans } from "../lib/api";
-import type { Plan } from "@slide/shared";
+import type { Plan } from "../lib/shared";
 
 interface UsePlansResult {
   plans: Plan[];

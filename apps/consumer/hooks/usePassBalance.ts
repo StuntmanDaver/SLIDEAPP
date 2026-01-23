@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
-import type { PassBalance } from "@slide/shared";
+import type { PassBalance } from "../lib/shared";
 
 interface UsePassBalanceResult {
   balance: PassBalance | null;

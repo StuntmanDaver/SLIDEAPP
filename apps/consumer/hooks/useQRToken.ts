@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { usePasses } from "./usePasses";
 import { issueQRToken } from "../lib/api";
-import { QR_TOKEN_TTL_SECONDS } from "@slide/shared";
+import { QR_TOKEN_TTL_SECONDS } from "../lib/shared";
 import * as Haptics from "expo-haptics";
 
 interface UseQRTokenResult {

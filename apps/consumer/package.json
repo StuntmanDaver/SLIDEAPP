@@ -20,7 +20,6 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.15",
-    "@slide/shared": "workspace:*",
     "@stripe/stripe-react-native": "^0.37.0",
     "@supabase/supabase-js": "^2.38.4",
     "date-fns": "^4.1.0",
