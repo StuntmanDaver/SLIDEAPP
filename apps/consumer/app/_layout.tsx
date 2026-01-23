@@ -52,7 +52,7 @@ export default function RootLayout() {
   return (
     <StripeProvider
       publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder"}
-      merchantIdentifier="merchant.com.slidevenue.consumer"
+      merchantIdentifier="merchant.com.slideapp.consumer"
     >
       <View className="flex-1">
         {!isConnected && <OfflineBanner />}

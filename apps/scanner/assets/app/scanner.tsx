@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
-import { redeemPass } from '../lib/api';
-import { getDeviceId } from '../lib/device';
-import { addScanToHistory } from '../lib/history';
+import { redeemPass } from '../../lib/api';
+import { getDeviceId } from '../../lib/device';
+import { addScanToHistory } from '../../lib/history';
 import { router } from 'expo-router';
-import { ScanResult } from '../components/ScanResult';
-import { SCAN_RESULTS } from '../lib/shared';
+import { ScanResult } from '../../components/ScanResult';
+import { SCAN_RESULTS } from '../../lib/shared';
 import * as Haptics from 'expo-haptics';
 
 export default function ScannerScreen() {

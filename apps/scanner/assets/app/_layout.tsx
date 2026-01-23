@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import { View, ActivityIndicator, AppState, AppStateStatus } from "react-native";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useRef } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import * as SecureStore from "expo-secure-store";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 SplashScreen.preventAutoHideAsync();
 
